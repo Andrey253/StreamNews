@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">StreaNews</string>
+    <string name="app_name">StreamNews</string>
     <string name="click_to_load">Нажмите кнопку для загрузки новостей</string>
     <string name="string_some_thing_wrong">Fail</string>
-    <string name="string_internet_connection_not_available">Интернет не доступен</string>
+    <string name="string_internet_connection_not_available">Отсутствует соединение с Интернет</string>
     <string name="getting_json_title">Подождите....</string>
     <string name="getting_json_message">Загрузка новостей</string>
     <string name="title_activity_main2">Main2Activity</string>
@@ -23,6 +23,9 @@
     <string name="string_ofline_view_news">Просмотор офлайн новостей</string>
 
     <string name="to_down_news">Загрузить новости</string>
+    <string name="string_is_all_new_downloaded">Все новости загружены</string>
+    <string name="offline_data">Загружены офлайн данные</string>
+    <string name="first_page_is_ok">Первая страница успешно загружена</string>
 
 
 </resources>

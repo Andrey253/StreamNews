@@ -96,7 +96,7 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 final ViewHolder vh = (ViewHolder) viewHolder;
                 vh.iProgress.setVisibility(View.VISIBLE);
                 ObNew = object_for_adapter.get(position);
-                vh.textDate.setText( ObNew.getPublishedAt().substring(0,10)+"  " + ObNew.getPublishedAt().substring(12,19));
+                vh.textDate.setText( ObNew.getPublishedAt().substring(0,10)+"  " + ObNew.getPublishedAt().substring(11,19));
                 vh.textDectibe.setText(ObNew.getDescription());
                 vh.textName.setText(ObNew.getTitle()+" "+position);
                 url = object_for_adapter.get(position).getUrlToImage();
@@ -139,7 +139,7 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 break;
             case NOINET:
                 NoInetVH vhnI = (NoInetVH) viewHolder;
-                vhnI.textNoInet.setText("Нет интернета");
+                vhnI.textNoInet.setText(R.string.string_internet_connection_not_available);
                 break;
         }
 

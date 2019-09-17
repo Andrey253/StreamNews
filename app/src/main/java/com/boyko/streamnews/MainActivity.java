@@ -1,8 +1,6 @@
 package com.boyko.streamnews;
 
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -77,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
                 {
 
                     current_page+=1;
-                    isLoading = true;
                     loadNextPage(current_page);
                 }
             }
@@ -87,16 +84,23 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent browserIntent = new Intent( Intent.ACTION_VIEW, Uri.parse("https://drive.google.com/open?id=1Zz1uO0yytQFemyDK7fyVWm1KEL_nsyLV"));
-                startActivity(browserIntent);
+/*                Intent browserIntent = new Intent( Intent.ACTION_VIEW, Uri.parse("https://drive.google.com/open?id=1Zz1uO0yytQFemyDK7fyVWm1KEL_nsyLV"));
+                startActivity(browserIntent);*/
+                if (InternetConnection.checkConnection(getApplicationContext()) && !isLoading){
+                    current_page=1;
+                    loadNextPage(current_page);
+                } else {
+                    Snackbar.make(parentView, R.string.string_internet_connection_not_available, Snackbar.LENGTH_LONG).show();
+                }
+
             }});
 
         if (Splash.isFirstPageOk()){
             Splash.setFirstPageOk(false);
             current_page=1;
-            Snackbar.make(parentView, "Загружены новые данные, страница 1", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(parentView, R.string.first_page_is_ok, Snackbar.LENGTH_LONG).show();
         }else if (!InternetConnection.checkConnection(getApplicationContext())){
-            Snackbar.make(parentView, "Загружены офлайн данные", Snackbar.LENGTH_LONG).show();
+            Snackbar.make(parentView, R.string.offline_data, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -113,12 +117,13 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
             if (current_page<TOTAL_PAGE){
 
                 current_page+=1;
-                isLoading =true;
                 loadNextPage(current_page);
             }
             else {
-                Snackbar.make(parentView, "Все новости загружены", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(parentView, R.string.string_is_all_new_downloaded, Snackbar.LENGTH_LONG).show();
             }
+        }else {
+            Snackbar.make(parentView, R.string.string_internet_connection_not_available, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -130,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
         @Override
         protected Void doInBackground(Integer... params) {
             try {
+
                 final int page  = params[0];
                 //Creating an object of our api interface
                 final ApiService api = Client.getApiService();
@@ -177,6 +183,12 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
                 System.out.println("my tag Exception catch ");
             }
             return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            isLoading = true;
         }
 
     }
