@@ -41,7 +41,7 @@
         <TextView
             android:id="@+id/textViewName"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="36dp"
             android:layout_margin="5dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             tools:text="Заголовок" />
@@ -49,7 +49,7 @@
         <TextView
             android:id="@+id/textViewDescribe"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="45dp"
             android:layout_margin="5dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textSize="10sp"

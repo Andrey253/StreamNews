@@ -8,16 +8,16 @@
     <TextView
         android:id="@+id/textNoInternet"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="110dp"
         android:layout_margin="5dp"
-        android:gravity="center_horizontal"
+        android:gravity="center|center_horizontal"
         android:textAppearance="?android:textAppearanceLarge"
         tools:text="@string/string_internet_connection_not_available" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/to_down_news" />
+        android:layout_height="115dp"
+        android:text="@string/continue_download" />
 
 </LinearLayout>
