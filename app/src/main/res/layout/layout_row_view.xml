@@ -20,7 +20,7 @@
             android:layout_gravity="center"
             android:layout_margin="3dp" />
 
-        <ProgressBar
+        <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/item_progress"
             style="@style/Widget.AppCompat.ProgressBar"
             android:layout_width="90dp"

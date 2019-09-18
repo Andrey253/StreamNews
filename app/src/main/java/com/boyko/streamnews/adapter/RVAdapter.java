@@ -105,7 +105,7 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 Picasso
                         .get()
                         .load(url)
-                        .error(R.mipmap.ic_no_image)
+                        //.error(R.mipmap.ic_no_image)
                         .into(vh.image, new com.squareup.picasso.Callback() {
                             @Override
                             public void onSuccess() {
