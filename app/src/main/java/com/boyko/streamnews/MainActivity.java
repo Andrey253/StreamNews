@@ -20,7 +20,6 @@ import com.boyko.streamnews.utils.InternetConnection;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.orm.SugarContext;
-
 import java.util.ArrayList;
 
 import retrofit2.Call;
@@ -29,13 +28,12 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements RVAdapter.customButtonListener{
 
-    private RecyclerView recyclerView;
     private View     parentView;
     private RVAdapter adapter;
 
     private ArrayList<Article> articleList;
     private ArrayList<ObjectNew> objectNews;
-    LinearLayoutManager linearLayoutManager;
+    private LinearLayoutManager linearLayoutManager;
 
     private boolean isLoading=false;
 
@@ -50,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
         SugarContext.init(this);
 
         parentView = findViewById(R.id.main_activity);
-        recyclerView = findViewById(R.id.recycle);
+        RecyclerView recyclerView = findViewById(R.id.recycle);
         objectNews = (ArrayList<ObjectNew>) ObjectNew.listAll(ObjectNew.class); // Получаем данные из базы
         adapter = new RVAdapter(MainActivity.this, objectNews);
         adapter.setCustomButtonListner(MainActivity.this); // Слушатель на адаптер, обработка нажатия на кнопку "Загрузить новости"
@@ -80,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
         }
     }
 
-    public void loadNextPage (int next_page){
+    private void loadNextPage(int next_page){
         MyRequest request = new MyRequest();
         request.execute(next_page);
     }
@@ -140,17 +138,11 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
                 //Creating an object of our api interface
                 final ApiService api = Client.getApiService();
 
-                /**
-                 * Calling JSON
-                 */
                 Call<ArticleList> call = api.getMyJSON(Splash.Q, Splash.FROM, Splash.SORT_BY, Splash.API_KEY, page);
 
-                /**
-                 * Enqueue Callback will be call when get response...
-                 */
                 call.enqueue(new Callback<ArticleList>() {
                     @Override
-                    public void onResponse(Call<ArticleList> call, Response<ArticleList> response) {
+                    public void onResponse(@SuppressWarnings("NullableProblems") Call<ArticleList> call, @SuppressWarnings("NullableProblems") Response<ArticleList> response) {
 
                         if (response.isSuccessful()) {
 
@@ -174,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
                     }
 
                     @Override
-                    public void onFailure(Call<ArticleList> call, Throwable t) {
+                    public void onFailure(@SuppressWarnings("NullableProblems") Call<ArticleList> call, @SuppressWarnings("NullableProblems") Throwable t) {
 
                     }
                 });
@@ -194,8 +186,8 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
     }
 //______________________ Helpers
 
-    public static ArrayList<ObjectNew> getObjectNews(ArrayList<Article> art){
-        ArrayList<ObjectNew> news = new ArrayList<ObjectNew>();
+    private static ArrayList<ObjectNew> getObjectNews(ArrayList<Article> art){
+        ArrayList<ObjectNew> news = new ArrayList<>();
         for (Article A : art){
             news.add(new ObjectNew(A.getTitle()
                     , A.getDescription()

@@ -3,6 +3,7 @@ package com.boyko.streamnews.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.boyko.streamnews.MainActivity;
 import com.boyko.streamnews.R;
 import com.boyko.streamnews.model.ObjectNew;
@@ -29,12 +28,11 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int LOADING = 1;
     private static final int NOINET = 2;
 
-    private String url = null;
     private ArrayList<ObjectNew> object_for_adapter;
-    Context context;
+    private Context context;
     private customButtonListener customListner;
 
-    public RVAdapter(Context context, ArrayList result) {
+    public RVAdapter(Context context, ArrayList<ObjectNew> result) {
         this.context = context;
         this.object_for_adapter = result;
     }
@@ -99,8 +97,8 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 vh.textDate.setText( ObNew.getPublishedAt().substring(0,10)+"  " + ObNew.getPublishedAt().substring(11,19));
                 vh.textDectibe.setText(ObNew.getDescription());
                 vh.textName.setText(ObNew.getTitle()+" "+position);
-                url = object_for_adapter.get(position).getUrlToImage();
-                if (url!=null && url.length()>0)
+                String url = object_for_adapter.get(position).getUrlToImage();
+                if (url !=null && url.length()>0)
 
                 Picasso
                         .get()
@@ -144,7 +142,8 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         //Pre fetch следующих 5 изображений
-        prefetch(object_for_adapter, position,5);
+        Fetch fetch = new Fetch();
+        fetch.execute(position);
     }
 
     @Override
@@ -154,7 +153,7 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 //______________________________________ Классы для Holders
     //____________ViewHolder
-    public class ViewHolder extends RecyclerView.ViewHolder{
+private class ViewHolder extends RecyclerView.ViewHolder{
 
 
     private ImageView image;
@@ -164,30 +163,30 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     //private RelativeLayout itemLayout;
     private ProgressBar iProgress;
 
-        public ViewHolder(View itemView) {
+        private ViewHolder(View itemView) {
             super(itemView);
 
 
-            image =         (ImageView) itemView.findViewById(R.id.imageView);
-            textName =      (TextView) itemView.findViewById(R.id.textViewName);
-            textDectibe =   (TextView)itemView.findViewById(R.id.textViewDescribe);
-            textDate =      (TextView)itemView.findViewById(R.id.textViewDate);
+            image =         itemView.findViewById(R.id.imageView);
+            textName =      itemView.findViewById(R.id.textViewName);
+            textDectibe =   itemView.findViewById(R.id.textViewDescribe);
+            textDate =      itemView.findViewById(R.id.textViewDate);
             //itemLayout =    itemView.findViewById(R.id.item_layout);
-            iProgress = (ProgressBar) itemView.findViewById(R.id.item_progress);
+            iProgress =     itemView.findViewById(R.id.item_progress);
         }
     }
     //_______________LoadingVH
-    public class LoadingVH extends RecyclerView.ViewHolder {
+    private class LoadingVH extends RecyclerView.ViewHolder {
 
-        public LoadingVH(View itemView) {
+        private LoadingVH(View itemView) {
             super(itemView);
         }
     }
     //_______________NoInetVH
-    public class NoInetVH extends RecyclerView.ViewHolder {
+    private class NoInetVH extends RecyclerView.ViewHolder {
         TextView textNoInet;
         Button btn;
-        public NoInetVH(View itemView) {
+        private NoInetVH(View itemView) {
             super(itemView);
             textNoInet = itemView.findViewById(R.id.textNoInternet);
             btn = itemView.findViewById(R.id.button);
@@ -206,7 +205,7 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
    _________________________________________________________________________________________________
     */
 
-        public void add(ObjectNew r) {
+        private void add(ObjectNew r) {
             object_for_adapter.add(r);
             notifyItemInserted(object_for_adapter.size() - 1);
         }
@@ -223,15 +222,27 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
-    //Pre fetch следующих 5 изображений
-    public static void prefetch(ArrayList<ObjectNew> array, int position, int fetch) {
-            for (int i = position ; i < fetch + position; i++) {
-            if (i < array.size()){
-                String url = array.get(i).getUrlToImage();
-                if (url!= null && url.length()!=0){
-                    Picasso.get().load(url).fetch();
+    //Асинхронно Pre fetch следующих 5 изображений
+
+    class Fetch extends AsyncTask<Integer, Void,Void> {
+
+        @Override
+        protected Void doInBackground(Integer... integers) {
+            try {
+                final int position  = integers[0];
+
+                for (int i = position ; i < 5 + position; i++) {
+                    if (i < object_for_adapter.size()){
+                        String url = object_for_adapter.get(i).getUrlToImage();
+                        if (url!= null && url.length()!=0){
+                            Picasso.get().load(url).fetch();
+                        }
+                    }
                 }
+            } catch(Exception ex) {
+                System.out.println("my tag Exception catch fetch");
             }
+            return null;
         }
     }
 }

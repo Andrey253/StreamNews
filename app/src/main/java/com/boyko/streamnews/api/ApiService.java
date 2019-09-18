@@ -21,4 +21,3 @@ public interface ApiService {
             @Query("page") int pageIndex
     );
 }
-//q=android&from=2019-04-00&sortBy=publishedAt&apiKey=26eddb253e7840f988aec61f2ece2907&page=3)

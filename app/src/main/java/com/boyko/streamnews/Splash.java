@@ -3,30 +3,24 @@ package com.boyko.streamnews;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.boyko.streamnews.adapter.RVAdapter;
 import com.boyko.streamnews.api.ApiService;
 import com.boyko.streamnews.api.Client;
 import com.boyko.streamnews.model.Article;
 import com.boyko.streamnews.model.ArticleList;
 import com.boyko.streamnews.model.ObjectNew;
 import com.orm.SugarContext;
-
+import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 public class Splash extends AppCompatActivity {
 
-    private final int SPLASH_DISPLAY_LENGHT = 3000;
-    Handler mHandler = new Handler();
+    private Handler mHandler = new Handler();
 
-    public static boolean firstPageOk = false;
+    private static boolean firstPageOk = false;
 
     public final static String Q = "android";
     public final static String FROM = "2019-04-00";
@@ -43,6 +37,7 @@ public class Splash extends AppCompatActivity {
 
         SugarContext.init(this);
 
+        int SPLASH_DISPLAY_LENGHT = 3000;
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -76,7 +71,7 @@ public class Splash extends AppCompatActivity {
                         for (ObjectNew N : objectNews_first) N.save(); // Сохраняем объекты в базу
                         firstPageOk = true;
 
-                        RVAdapter.prefetch(objectNews_first,0,10); //Pre fetch следующих 10 изображений
+                        prefetch(objectNews_first); //Pre fetch следующих 10 изображений
 
                     } else {
                         System.out.println("my Ошибка получения данных ");
@@ -95,8 +90,8 @@ public class Splash extends AppCompatActivity {
     }
     //______________________ Helpers
 
-    public static ArrayList<ObjectNew> getObjectNews(ArrayList<Article> art){   // конвертация объектов
-        ArrayList<ObjectNew> news = new ArrayList<ObjectNew>();
+    private static ArrayList<ObjectNew> getObjectNews(ArrayList<Article> art){   // конвертация объектов
+        ArrayList<ObjectNew> news = new ArrayList<>();
         for (Article A : art){
             news.add(new ObjectNew(A.getTitle()
                     , A.getDescription()
@@ -106,7 +101,17 @@ public class Splash extends AppCompatActivity {
         }
         return news;
     }
-
+    //Pre fetch следующих 5 изображений
+    private void prefetch(ArrayList<ObjectNew> array) {
+        for (int i = 0 ; i < 5; i++) {
+            if (i < array.size()){
+                String url = array.get(i).getUrlToImage();
+                if (url!= null && url.length()!=0){
+                    Picasso.get().load(url).fetch();
+                }
+            }
+        }
+    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();

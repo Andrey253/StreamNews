@@ -20,12 +20,12 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
-    <string name="string_ofline_view_news">Просмотор офлайн новостей</string>
 
     <string name="string_is_all_new_downloaded">Все новости загружены</string>
     <string name="offline_data">Загружены офлайн данные</string>
     <string name="first_page_is_ok">Первая страница успешно загружена</string>
     <string name="continue_download">Продолжить загрузку новостей</string>
+    <string name="autor">Andrey Boyko</string>
 
 
 </resources>
