@@ -82,8 +82,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-/*                Intent browserIntent = new Intent( Intent.ACTION_VIEW, Uri.parse("https://drive.google.com/open?id=1Zz1uO0yytQFemyDK7fyVWm1KEL_nsyLV"));
-                startActivity(browserIntent);*/
+
                 if (InternetConnection.checkConnection(getApplicationContext()) && !isLoading){
                     current_page=1;
                     loadNextPage(current_page);
