@@ -3,6 +3,8 @@ package com.boyko.streamnews;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.boyko.streamnews.api.ApiService;
 import com.boyko.streamnews.api.Client;
@@ -21,6 +23,7 @@ public class Splash extends AppCompatActivity {
     private Handler mHandler = new Handler();
 
     private static boolean firstPageOk = false;
+    private boolean isStartHandler = false;
 
     public final static String Q = "android";
     public final static String FROM = "2019-04-00";
@@ -36,18 +39,32 @@ public class Splash extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         SugarContext.init(this);
+        if (savedInstanceState!=null)
+        isStartHandler = savedInstanceState.getBoolean("isStartHandler");
 
-        int SPLASH_DISPLAY_LENGHT = 3000;
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent mainIntent = new Intent(Splash.this, MainActivity.class);
-                Splash.this.startActivity(mainIntent);
-                Splash.this.finish();
-            }
-        }, SPLASH_DISPLAY_LENGHT);
+        int SPLASH_DISPLAY_LENGHT = 6000;
+        if (!isStartHandler)
+        {
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent mainIntent = new Intent(Splash.this, MainActivity.class);
+                    Splash.this.startActivity(mainIntent);
+                    Splash.this.finish();
+                }
+            }, SPLASH_DISPLAY_LENGHT);
 
-        loadfirstpage();  // Получаем первые данные во время работы сплэш скрина
+            loadfirstpage();  // Получаем первые данные во время работы сплэш скрина
+        }
+        isStartHandler = true;
+        //System.out.println("my 2 is = "+isStartHandler);
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("isStartHandler", true);
     }
 
     private void loadfirstpage() {
