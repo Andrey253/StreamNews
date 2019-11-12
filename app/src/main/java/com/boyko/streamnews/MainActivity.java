@@ -51,8 +51,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
                 .subscribe(new Consumer<ArticleList>() {
                     @Override
                     public void accept(ArticleList articleList) throws Exception {
-/////////////////////////
-                        isLoading = true;
+
                         if (current_page==1){
                             Snackbar.make(parentView, "Очищаем базу перед первым получением данных", Snackbar.LENGTH_LONG).show();
                             ObjectNew.deleteAll(ObjectNew.class);   // Очищаем базу перед первым удачным получением данных
@@ -86,8 +85,6 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
         linearLayoutManager = new LinearLayoutManager(getBaseContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
-
-
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
@@ -103,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
                         && InternetConnection.checkConnection(getApplicationContext()))
                 {
 
+                    isLoading=true;
                     current_page+=1;
                     fetchdata(current_page);
                 }
@@ -115,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
             public void onClick(View v) {
 
                 if (InternetConnection.checkConnection(getApplicationContext()) && !isLoading){
+                    isLoading = true;
                     current_page=1;
                     fetchdata(current_page);
                 } else {
@@ -132,12 +131,6 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
         }
     }
 
-    private void loadNextPage(int next_page){
-        //MyRequest request = new MyRequest();
-        //request.execute(next_page);
-
-    }
-
     @Override
     public void onButtonClickListner() {
 
@@ -145,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
 
             if (current_page<TOTAL_PAGE){
 
+                isLoading = true;
                 current_page+=1;
                 fetchdata(current_page);
             }

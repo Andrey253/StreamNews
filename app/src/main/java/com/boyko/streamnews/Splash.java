@@ -12,6 +12,7 @@ import com.boyko.streamnews.api.Client;
 import com.boyko.streamnews.model.Article;
 import com.boyko.streamnews.model.ArticleList;
 import com.boyko.streamnews.model.ObjectNew;
+import com.boyko.streamnews.utils.InternetConnection;
 import com.orm.SugarContext;
 import com.squareup.picasso.Picasso;
 
@@ -81,7 +82,7 @@ public class Splash extends AppCompatActivity {
                     Splash.this.finish();
                 }
             }, SPLASH_DISPLAY_LENGHT);
-
+            if (InternetConnection.checkConnection(getApplicationContext()))
             fetchdata(1);  // Получаем первые данные во время работы сплэш скрина
         }
         isStartHandler = true;
