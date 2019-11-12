@@ -96,7 +96,7 @@ public class RVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 ObNew = object_for_adapter.get(position);
                 vh.textDate.setText( ObNew.getPublishedAt().substring(0,10)+"  " + ObNew.getPublishedAt().substring(11,19));
                 vh.textDectibe.setText(ObNew.getDescription());
-                vh.textName.setText(ObNew.getTitle());
+                vh.textName.setText(ObNew.getTitle()+ position);//////
                 String url = object_for_adapter.get(position).getUrlToImage();
                 if (url !=null && url.length()>0)
 

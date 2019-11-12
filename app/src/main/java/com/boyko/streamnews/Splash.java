@@ -7,12 +7,20 @@ import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.boyko.streamnews.api.ApiService;
+import com.boyko.streamnews.api.Client;
 import com.boyko.streamnews.model.Article;
+import com.boyko.streamnews.model.ArticleList;
 import com.boyko.streamnews.model.ObjectNew;
 import com.orm.SugarContext;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class Splash extends AppCompatActivity {
 
@@ -28,6 +36,30 @@ public class Splash extends AppCompatActivity {
 
     private ArrayList<Article> articleList_fist;
     private ArrayList<ObjectNew> objectNews_first = new ArrayList<>();
+
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    ApiService api = Client.getApiService();
+
+    private void fetchdata(int number_page){
+        compositeDisposable.add(api.getMyJSON(Splash.Q, Splash.FROM, Splash.SORT_BY, Splash.API_KEY, number_page)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<ArticleList>() {
+                    @Override
+                    public void accept(ArticleList articleList) throws Exception {
+                        System.out.println("my size articleList "+ articleList.getArticles().size());
+                        ObjectNew.deleteAll(ObjectNew.class); // Очищаем базу после первого удачного получения данных
+
+                        articleList_fist = articleList.getArticles();
+                        objectNews_first = getObjectNews(articleList_fist);
+
+                        for (ObjectNew N : objectNews_first) N.save(); // Сохраняем объекты в базу
+                        firstPageOk = true;
+
+                        prefetch(objectNews_first); //Pre fetch следующих 10 изображений
+                    }
+                }));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +82,9 @@ public class Splash extends AppCompatActivity {
                 }
             }, SPLASH_DISPLAY_LENGHT);
 
-            //loadfirstpage();  // Получаем первые данные во время работы сплэш скрина
+            fetchdata(1);  // Получаем первые данные во время работы сплэш скрина
         }
         isStartHandler = true;
-        //System.out.println("my 2 is = "+isStartHandler);
 
     }
 

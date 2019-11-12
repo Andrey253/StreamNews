@@ -40,19 +40,34 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
 
     public final static int TOTAL_PAGE = 5;
     public static int current_page=0;
+
     CompositeDisposable compositeDisposable = new CompositeDisposable();
     ApiService api = Client.getApiService();
 
-    private void fetchdata(){
-        compositeDisposable.add(api.getMyJSON(Splash.Q, Splash.FROM, Splash.SORT_BY, Splash.API_KEY, 1)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Consumer<ArticleList>() {
-            @Override
-            public void accept(ArticleList articleList) throws Exception {
-                System.out.println("my size articleList "+ articleList.getArticles().size());
-            }
-        }));
+    private void fetchdata(final int number_page){
+        compositeDisposable.add(api.getMyJSON(Splash.Q, Splash.FROM, Splash.SORT_BY, Splash.API_KEY, number_page)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<ArticleList>() {
+                    @Override
+                    public void accept(ArticleList articleList) throws Exception {
+/////////////////////////
+                        isLoading = true;
+                        if (current_page==1){
+                            Snackbar.make(parentView, "Очищаем базу перед первым получением данных", Snackbar.LENGTH_LONG).show();
+                            ObjectNew.deleteAll(ObjectNew.class);   // Очищаем базу перед первым удачным получением данных
+                            adapter.clear();                        // Очищаем адаптер
+                        }
+
+                        //articleList = articleList.getArticles();
+                        objectNews = getObjectNews(articleList.getArticles());
+
+                        for (ObjectNew N : objectNews) N.save(); // Сохраняем объекты из списка
+                        adapter.addAll(objectNews);         // Добавляем полученные данные в адаптер
+                        Snackbar.make(parentView, "Загрузили страницу № "+number_page, Snackbar.LENGTH_LONG).show();
+                        isLoading=false;
+                    }
+                }));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
         linearLayoutManager = new LinearLayoutManager(getBaseContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        fetchdata();
+
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -89,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
                 {
 
                     current_page+=1;
-                    loadNextPage(current_page);
+                    fetchdata(current_page);
                 }
             }
         });
@@ -101,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
 
                 if (InternetConnection.checkConnection(getApplicationContext()) && !isLoading){
                     current_page=1;
-                    loadNextPage(current_page);
+                    fetchdata(current_page);
                 } else {
                     Snackbar.make(parentView, R.string.string_internet_connection_not_available, Snackbar.LENGTH_LONG).show();
                 }
@@ -120,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
     private void loadNextPage(int next_page){
         //MyRequest request = new MyRequest();
         //request.execute(next_page);
+
     }
 
     @Override
@@ -130,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
             if (current_page<TOTAL_PAGE){
 
                 current_page+=1;
-                loadNextPage(current_page);
+                fetchdata(current_page);
             }
             else {
                 Snackbar.make(parentView, R.string.string_is_all_new_downloaded, Snackbar.LENGTH_LONG).show();
