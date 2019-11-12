@@ -6,17 +6,13 @@ import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import com.boyko.streamnews.api.ApiService;
-import com.boyko.streamnews.api.Client;
+
 import com.boyko.streamnews.model.Article;
-import com.boyko.streamnews.model.ArticleList;
 import com.boyko.streamnews.model.ObjectNew;
 import com.orm.SugarContext;
 import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class Splash extends AppCompatActivity {
 
@@ -42,7 +38,7 @@ public class Splash extends AppCompatActivity {
         if (savedInstanceState!=null)
         isStartHandler = savedInstanceState.getBoolean("isStartHandler");
 
-        int SPLASH_DISPLAY_LENGHT = 6000;
+        int SPLASH_DISPLAY_LENGHT = 1000;
         if (!isStartHandler)
         {
             mHandler.postDelayed(new Runnable() {
@@ -54,7 +50,7 @@ public class Splash extends AppCompatActivity {
                 }
             }, SPLASH_DISPLAY_LENGHT);
 
-            loadfirstpage();  // Получаем первые данные во время работы сплэш скрина
+            //loadfirstpage();  // Получаем первые данные во время работы сплэш скрина
         }
         isStartHandler = true;
         //System.out.println("my 2 is = "+isStartHandler);
@@ -67,7 +63,7 @@ public class Splash extends AppCompatActivity {
         outState.putBoolean("isStartHandler", true);
     }
 
-    private void loadfirstpage() {
+    /*private void loadfirstpage() {
         try {
 
             final ApiService api = Client.getApiService();
@@ -104,7 +100,7 @@ public class Splash extends AppCompatActivity {
         } catch(Exception ex) {
             System.out.println("my tag Exception catch ");
         }
-    }
+    }*/
     //______________________ Helpers
 
     private static ArrayList<ObjectNew> getObjectNews(ArrayList<Article> art){   // конвертация объектов

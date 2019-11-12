@@ -1,7 +1,6 @@
 package com.boyko.streamnews;
 
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 
@@ -20,11 +19,13 @@ import com.boyko.streamnews.utils.InternetConnection;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.orm.SugarContext;
+
 import java.util.ArrayList;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements RVAdapter.customButtonListener{
 
@@ -39,7 +40,20 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
 
     public final static int TOTAL_PAGE = 5;
     public static int current_page=0;
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    ApiService api = Client.getApiService();
 
+    private void fetchdata(){
+        compositeDisposable.add(api.getMyJSON(Splash.Q, Splash.FROM, Splash.SORT_BY, Splash.API_KEY, 1)
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Consumer<ArticleList>() {
+            @Override
+            public void accept(ArticleList articleList) throws Exception {
+                System.out.println("my size articleList "+ articleList.getArticles().size());
+            }
+        }));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
 
         linearLayoutManager = new LinearLayoutManager(getBaseContext());
         recyclerView.setLayoutManager(linearLayoutManager);
+
+        fetchdata();
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -102,8 +118,8 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
     }
 
     private void loadNextPage(int next_page){
-        MyRequest request = new MyRequest();
-        request.execute(next_page);
+        //MyRequest request = new MyRequest();
+        //request.execute(next_page);
     }
 
     @Override
@@ -127,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
     /**
      * Асинхронный запрос для получения данных
      */
-    class MyRequest extends AsyncTask<Integer, Void,Void> {
+    /*class MyRequest extends AsyncTask<Integer, Void,Void> {
 
         @Override
         protected Void doInBackground(Integer... params) {
@@ -182,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
             isLoading = true;
         }
 
-    }
+    }*/
 //______________________ Helpers
 
     private static ArrayList<ObjectNew> getObjectNews(ArrayList<Article> art){
