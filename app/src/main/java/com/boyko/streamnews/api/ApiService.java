@@ -9,10 +9,6 @@ import retrofit2.http.Query;
 
 public interface ApiService {
  
-    /*
-    Retrofit get annotation with our URL
-    And our method that will return us the List of Article
-    */
     @GET("/v2/everything")
     Observable<ArticleList> getMyJSON(
             @Query("q") String q,
