@@ -50,7 +50,7 @@ public class Splash extends AppCompatActivity {
         if (savedInstanceState!=null)
         isStartHandler = savedInstanceState.getBoolean("isStartHandler");
 
-        int SPLASH_DISPLAY_LENGHT = 1000;
+        int SPLASH_DISPLAY_LENGHT = 5000;
         if (!isStartHandler)
         {
             mHandler.postDelayed(new Runnable() {
