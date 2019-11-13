@@ -84,6 +84,7 @@ public class Splash extends AppCompatActivity {
                 .subscribe(new Observer<ArticleList>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+
                     }
                     @Override
                     public void onNext(ArticleList articleList) {

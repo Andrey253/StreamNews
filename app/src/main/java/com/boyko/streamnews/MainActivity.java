@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements RVAdapter.customB
                     public void onSubscribe(Disposable d) {
                     }
                     @Override
+
                     public void onNext(ArticleList articleList) {
 
                         if (current_page==1){
