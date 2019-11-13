@@ -22,51 +22,68 @@ import com.orm.SugarContext;
 
 import java.util.ArrayList;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements RVAdapter.customButtonListener{
 
     private View     parentView;
+
     private RVAdapter adapter;
 
-    private ArrayList<Article> articleList;
     private ArrayList<ObjectNew> objectNews;
+
     private LinearLayoutManager linearLayoutManager;
 
     private boolean isLoading=false;
 
     public final static int TOTAL_PAGE = 5;
+
     public static int current_page=0;
 
-    CompositeDisposable compositeDisposable = new CompositeDisposable();
     ApiService api = Client.getApiService();
 
     private void fetchdata(final int number_page){
-        compositeDisposable.add(api.getMyJSON(Splash.Q, Splash.FROM, Splash.SORT_BY, Splash.API_KEY, number_page)
-                .subscribeOn(Schedulers.io())
+
+        Observable<ArticleList> articleListObservable = api.getMyJSON(Splash.Q, Splash.FROM, Splash.SORT_BY, Splash.API_KEY, number_page);
+
+        articleListObservable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<ArticleList>() {
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<ArticleList>() {
                     @Override
-                    public void accept(ArticleList articleList) throws Exception {
+                    public void onSubscribe(Disposable d) {
+                    }
+                    @Override
+                    public void onNext(ArticleList articleList) {
 
                         if (current_page==1){
-                            Snackbar.make(parentView, "Очищаем базу перед первым получением данных", Snackbar.LENGTH_LONG).show();
                             ObjectNew.deleteAll(ObjectNew.class);   // Очищаем базу перед первым удачным получением данных
                             adapter.clear();                        // Очищаем адаптер
                         }
-
-                        //articleList = articleList.getArticles();
                         objectNews = getObjectNews(articleList.getArticles());
 
                         for (ObjectNew N : objectNews) N.save(); // Сохраняем объекты из списка
                         adapter.addAll(objectNews);         // Добавляем полученные данные в адаптер
                         Snackbar.make(parentView, "Загрузили страницу № "+number_page, Snackbar.LENGTH_LONG).show();
+                        // Отображение номера страницы для теста программы
                         isLoading=false;
                     }
-                }));
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

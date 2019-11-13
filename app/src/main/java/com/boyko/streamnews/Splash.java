@@ -18,9 +18,10 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class Splash extends AppCompatActivity {
@@ -38,29 +39,7 @@ public class Splash extends AppCompatActivity {
     private ArrayList<Article> articleList_fist;
     private ArrayList<ObjectNew> objectNews_first = new ArrayList<>();
 
-    CompositeDisposable compositeDisposable = new CompositeDisposable();
     ApiService api = Client.getApiService();
-
-    private void fetchdata(int number_page){
-        compositeDisposable.add(api.getMyJSON(Splash.Q, Splash.FROM, Splash.SORT_BY, Splash.API_KEY, number_page)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<ArticleList>() {
-                    @Override
-                    public void accept(ArticleList articleList) throws Exception {
-                        System.out.println("my size articleList "+ articleList.getArticles().size());
-                        ObjectNew.deleteAll(ObjectNew.class); // Очищаем базу после первого удачного получения данных
-
-                        articleList_fist = articleList.getArticles();
-                        objectNews_first = getObjectNews(articleList_fist);
-
-                        for (ObjectNew N : objectNews_first) N.save(); // Сохраняем объекты в базу
-                        firstPageOk = true;
-
-                        prefetch(objectNews_first); //Pre fetch следующих 10 изображений
-                    }
-                }));
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,44 +74,43 @@ public class Splash extends AppCompatActivity {
         outState.putBoolean("isStartHandler", true);
     }
 
-    /*private void loadfirstpage() {
-        try {
+    private void fetchdata(final int number_page){
 
-            final ApiService api = Client.getApiService();
+        Observable<ArticleList> articleListObservable = api.getMyJSON(Splash.Q, Splash.FROM, Splash.SORT_BY, Splash.API_KEY, number_page);
 
-            Call<ArticleList> call = api.getMyJSON(Q, FROM, SORT_BY, API_KEY, 1);
+        articleListObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Observer<ArticleList>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+                    @Override
+                    public void onNext(ArticleList articleList) {
+                        ObjectNew.deleteAll(ObjectNew.class); // Очищаем базу после первого удачного получения данных
 
-            call.enqueue(new Callback<ArticleList>() {
-                @Override
-                public void onResponse(Call<ArticleList> call, Response<ArticleList> response) {
-
-                    if (response.isSuccessful()) {
-
-                        ObjectNew.deleteAll(ObjectNew.class); // Очищаем базу перед первым удачным получением данных
-
-                        articleList_fist = response.body().getArticles();
+                        articleList_fist = articleList.getArticles();
                         objectNews_first = getObjectNews(articleList_fist);
 
                         for (ObjectNew N : objectNews_first) N.save(); // Сохраняем объекты в базу
                         firstPageOk = true;
 
-                        prefetch(objectNews_first); //Pre fetch следующих 10 изображений
+                        prefetch(objectNews_first); //Pre fetch следующих 5 изображений
 
-                    } else {
-                        System.out.println("my Ошибка получения данных ");
                     }
-                }
 
-                @Override
-                public void onFailure(Call<ArticleList> call, Throwable t) {
-                    System.out.println("my Ошибка получения данных ");
-                }
-            });
+                    @Override
+                    public void onError(Throwable e) {
 
-        } catch(Exception ex) {
-            System.out.println("my tag Exception catch ");
-        }
-    }*/
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+    }
     //______________________ Helpers
 
     private static ArrayList<ObjectNew> getObjectNews(ArrayList<Article> art){   // конвертация объектов
